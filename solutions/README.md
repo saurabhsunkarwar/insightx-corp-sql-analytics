@@ -105,35 +105,6 @@ LEFT JOIN Sales.Products p
 WHERE oi.ProductID IS NULL 
    OR p.ProductID IS NULL;
 GO
-```
-
----
-
-## 03. Missing / Unmapped Products in Sales
-
-### Business Problem
-Detect sales line items where product reference IDs are either missing (`NULL`) or unmapped to the Master Product Catalog (foreign key integrity violations).
-
-```sql
-USE InsightXDb;
-GO
-
-SELECT 
-    oi.OrderItemID,
-    oi.OrderID,
-    oi.ProductID AS RecordedProductID,
-    oi.Quantity,
-    oi.PricePerUnit,
-    CASE 
-        WHEN oi.ProductID IS NULL THEN 'Missing Product ID (NULL)'
-        WHEN p.ProductID IS NULL THEN 'Unmapped Product ID (FK Violation)'
-    END AS QualityIssueType
-FROM Sales.OrderItems oi
-LEFT JOIN Sales.Products p 
-    ON oi.ProductID = p.ProductID
-WHERE oi.ProductID IS NULL 
-   OR p.ProductID IS NULL;
-GO
 
 ```
 ---
