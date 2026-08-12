@@ -86,7 +86,7 @@ erDiagram
     Sales_Products ||--o{ Sales_OrderItems : included_in
     Sales_Orders ||--o| Operations_Deliveries : fulfilled_by
     Operations_DeliveryPartners ||--o{ Operations_Deliveries : executes
-
+```
 ---
 
 ## 📊 Analytical Areas
