@@ -48,7 +48,7 @@ FROM QuarterlyPurchases
 WHERE ActiveQuarters = 4
 ORDER BY TotalSpent DESC;
 GO
-
+```
 
 ---
 
@@ -77,6 +77,35 @@ WHERE PriceRank = 1
 ORDER BY UnitPrice DESC;
 GO
 
+```
+---
+
+## 03. Missing / Unmapped Products in Sales
+
+### Business Problem
+Detect sales line items where product reference IDs are either missing (`NULL`) or unmapped to the Master Product Catalog (foreign key integrity violations).
+
+```sql
+USE InsightXDb;
+GO
+
+SELECT 
+    oi.OrderItemID,
+    oi.OrderID,
+    oi.ProductID AS RecordedProductID,
+    oi.Quantity,
+    oi.PricePerUnit,
+    CASE 
+        WHEN oi.ProductID IS NULL THEN 'Missing Product ID (NULL)'
+        WHEN p.ProductID IS NULL THEN 'Unmapped Product ID (FK Violation)'
+    END AS QualityIssueType
+FROM Sales.OrderItems oi
+LEFT JOIN Sales.Products p 
+    ON oi.ProductID = p.ProductID
+WHERE oi.ProductID IS NULL 
+   OR p.ProductID IS NULL;
+GO
+```
 
 ---
 
@@ -106,36 +135,38 @@ WHERE oi.ProductID IS NULL
    OR p.ProductID IS NULL;
 GO
 
-
+```
 ---
 
-## 03. Missing / Unmapped Products in Sales
+## 04. Employees Sharing Salaries within Department
 
 ### Business Problem
-Detect sales line items where product reference IDs are either missing (`NULL`) or unmapped to the Master Product Catalog (foreign key integrity violations).
+Identify employees who have identical salaries within the same department to assist HR with compensation equity audits.
 
 ```sql
 USE InsightXDb;
 GO
 
+WITH SalaryCounts AS (
+    SELECT 
+        e.EmployeeID,
+        e.FirstName + ' ' + e.LastName AS EmployeeName,
+        d.DepartmentName,
+        e.Salary,
+        COUNT(*) OVER(PARTITION BY e.DepartmentID, e.Salary) AS SameSalaryCount
+    FROM HR.Employees e
+    INNER JOIN HR.Departments d ON e.DepartmentID = d.DepartmentID
+)
 SELECT 
-    oi.OrderItemID,
-    oi.OrderID,
-    oi.ProductID AS RecordedProductID,
-    oi.Quantity,
-    oi.PricePerUnit,
-    CASE 
-        WHEN oi.ProductID IS NULL THEN 'Missing Product ID (NULL)'
-        WHEN p.ProductID IS NULL THEN 'Unmapped Product ID (FK Violation)'
-    END AS QualityIssueType
-FROM Sales.OrderItems oi
-LEFT JOIN Sales.Products p 
-    ON oi.ProductID = p.ProductID
-WHERE oi.ProductID IS NULL 
-   OR p.ProductID IS NULL;
+    EmployeeID,
+    EmployeeName,
+    DepartmentName,
+    Salary
+FROM SalaryCounts
+WHERE SameSalaryCount > 1
+ORDER BY DepartmentName, Salary DESC;
 GO
-
-
+```
 ---
 
 ## 05. Third Transaction Per User
@@ -169,7 +200,7 @@ WHERE TxSequence = 3
 ORDER BY UserID;
 GO
 
-
+```
 ---
 
 ## 06. Delayed Orders by Delivery Partner
@@ -196,7 +227,7 @@ GROUP BY p.PartnerID, p.PartnerName
 ORDER BY DelayedDeliveries DESC, DelayPercentage DESC;
 GO
 
-
+```
 ---
 
 ## 07. Standardize Raw Customer Names
@@ -234,7 +265,7 @@ SELECT
 FROM ParsedNames;
 GO
 
-
+```
 ---
 
 ## 08. Quarterly Customer Purchasing Trends
@@ -258,31 +289,39 @@ GROUP BY YEAR(OrderDate), DATEPART(QUARTER, OrderDate)
 ORDER BY SalesYear ASC, DATEPART(QUARTER, OrderDate) ASC;
 GO
 
-
+```
 ---
 
-## 08. Quarterly Customer Purchasing Trends
+## 09. Weekday vs. Weekend Active Users
 
 ### Business Problem
-Provide executive leadership with quarterly sales rollups displaying customer reach, order volume, total revenue, and average order value.
+Identify highly engaged "power users" who log activity during both workdays (Monday through Friday) and weekends (Saturday/Sunday).
 
 ```sql
 USE InsightXDb;
 GO
 
+SET DATEFIRST 1; -- 1 = Monday, 7 = Sunday
+
+WITH UserDayClassification AS (
+    SELECT 
+        UserID,
+        CASE 
+            WHEN DATEPART(dw, ActivityDate) IN (6, 7) THEN 'Weekend' 
+            ELSE 'Weekday' 
+        END AS DayType
+    FROM Mobility.UserActivity
+)
 SELECT 
-    YEAR(OrderDate) AS SalesYear,
-    'Q' + CAST(DATEPART(QUARTER, OrderDate) AS VARCHAR(1)) AS SalesQuarter,
-    COUNT(DISTINCT CustomerID) AS UniqueCustomers,
-    COUNT(OrderID) AS TotalOrders,
-    SUM(TotalAmount) AS QuarterlyRevenue,
-    CAST(AVG(TotalAmount) AS DECIMAL(10,2)) AS AvgOrderValue
-FROM Sales.Orders
-GROUP BY YEAR(OrderDate), DATEPART(QUARTER, OrderDate)
-ORDER BY SalesYear ASC, DATEPART(QUARTER, OrderDate) ASC;
+    UserID,
+    COUNT(CASE WHEN DayType = 'Weekday' THEN 1 END) AS WeekdayActivityCount,
+    COUNT(CASE WHEN DayType = 'Weekend' THEN 1 END) AS WeekendActivityCount
+FROM UserDayClassification
+GROUP BY UserID
+HAVING COUNT(CASE WHEN DayType = 'Weekday' THEN 1 END) > 0 
+   AND COUNT(CASE WHEN DayType = 'Weekend' THEN 1 END) > 0;
 GO
-
-
+```
 ---
 
 ## 10. Products Performing Above Category Average Price
@@ -315,5 +354,4 @@ FROM CategoryAverages
 WHERE UnitPrice > CategoryAvgPrice
 ORDER BY CategoryName, PriceDifferenceAboveAvg DESC;
 GO
-
-
+```
