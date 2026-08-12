@@ -50,10 +50,9 @@ ORDER BY TotalSpent DESC;
 GO
 ```
 #### Expected Output
-| CustomerID | FullName | ActiveQuarters |
-| :- | :--- | :- |
-| 1 | Johnathan Smith | 4 |
----
+| CustomerID | FullName | Email | TotalOrders | TotalSpent |
+| :- | :--- | :--- | :- | :- |
+| 1 | Johnathan Smith | johnathan.smith@email.com | 4 | 2800.00 |
 
 ## 02. Most Expensive Products by Category
 
