@@ -14,7 +14,7 @@
 | **04** | [Employees Sharing Department Salaries](#04-employees-sharing-salaries-in-same-department) | HR Analytics | Window Aggregations, COUNT() OVER() | **Medium** |
 | **05** | [Third Transaction Per User](#05-third-transaction-per-user) | Mobility Analytics | ROW_NUMBER(), Window Partitioning | **Medium** |
 | **06** | [Delayed Orders by Delivery Partner](#06-delayed-orders-by-delivery-partner) | Operations | Conditional Aggregation, SLA Rates | **Easy-Medium** |
-| **07** | [Standardizing Customer Names](#07-standardize-raw-customer-names) | Data Quality | TRIM(), CHARINDEX(), String Functions | **Medium** |
+| **07** | [Standardizing Customer Names](#07-standardize-raw-customer-names) | Data Quality | TRIM(), STRING_SPLIT(), STRING_AGG() | **Medium** |
 | **08** | [Quarterly Customer Purchasing Trends](#08-quarterly-customer-purchasing-trends) | Executive BI | Date Aggregations, Rollups, AVG() | **Easy-Medium** |
 | **09** | [Weekday vs. Weekend Active Users](#09-users-active-on-both-weekdays-and-weekends) | Mobility Analytics | DATEPART(), SET DATEFIRST, Grouping | **Medium** |
 | **10** | [Products Performing Above Category Average](#10-products-above-category-average-price) | Product Analytics | Window Aggregations, Delta Calculations | **Medium** |
