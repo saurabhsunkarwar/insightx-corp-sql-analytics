@@ -241,30 +241,32 @@ Clean and reformat unstandardized customer names (irregular casing, extra whites
 USE InsightXDb;
 GO
 
-WITH CleanedWhitespace AS (
+WITH SplitWords AS (
     SELECT 
-        CustomerID, 
-        FullName AS OriginalName, 
-        TRIM(FullName) AS TrimmedName
-    FROM Sales.Customers
+        c.CustomerID,
+        c.FullName AS OriginalName,
+        s.value AS NameWord,
+        /* Ordinal value preserves exact word position in the full name */
+        ROW_NUMBER() OVER(PARTITION BY c.CustomerID ORDER BY (SELECT NULL)) AS WordOrder
+    FROM Sales.Customers c
+    CROSS APPLY STRING_SPLIT(TRIM(c.FullName), ' ') s
+    WHERE s.value <> '' -- Filter out extra consecutive spaces
 ),
-ParsedNames AS (
+CapitalizedWords AS (
     SELECT 
-        CustomerID, 
-        OriginalName, 
-        TrimmedName,
-        LEFT(TrimmedName, CHARINDEX(' ', TrimmedName) - 1) AS RawFirstName,
-        SUBSTRING(TrimmedName, CHARINDEX(' ', TrimmedName) + 1, LEN(TrimmedName)) AS RawLastName
-    FROM CleanedWhitespace
-    WHERE CHARINDEX(' ', TrimmedName) > 0
+        CustomerID,
+        OriginalName,
+        WordOrder,
+        UPPER(LEFT(NameWord, 1)) + LOWER(SUBSTRING(NameWord, 2, LEN(NameWord))) AS CleanWord
+    FROM SplitWords
 )
 SELECT 
     CustomerID,
     OriginalName,
-    UPPER(LEFT(RawFirstName, 1)) + LOWER(SUBSTRING(RawFirstName, 2, LEN(RawFirstName))) 
-    + ' ' + 
-    UPPER(LEFT(RawLastName, 1)) + LOWER(SUBSTRING(RawLastName, 2, LEN(RawLastName))) AS StandardizedName
-FROM ParsedNames;
+    STRING_AGG(CleanWord, ' ') WITHIN GROUP (ORDER BY WordOrder) AS StandardizedName
+FROM CapitalizedWords
+GROUP BY CustomerID, OriginalName
+ORDER BY CustomerID;
 GO
 
 ```
@@ -273,7 +275,7 @@ GO
 | :- | :--- | :--- |
 | 1 | &nbsp;&nbsp;johnathan SMITH&nbsp;&nbsp; | Johnathan Smith |
 | 2 | mary JANE&nbsp;&nbsp; | Mary Jane |
-| 3 | robert T. DOWNEY | Robert T. downey |
+| 3 | robert T. DOWNEY | Robert T. Downey |
 | 4 | Alice Walker | Alice Walker |
 | 5 | Bruce Wayne | Bruce Wayne |
 ---
