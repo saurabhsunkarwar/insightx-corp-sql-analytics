@@ -30,6 +30,7 @@ WITH SalaryDuplicates AS (
         ON e.DepartmentID = d.DepartmentID
 )
 SELECT 
+    EmployeeID,
     DepartmentName,
     EmployeeName,
     Salary
