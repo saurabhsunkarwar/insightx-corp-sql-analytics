@@ -154,9 +154,11 @@ insightx_corp/
 │   └── 10_above_category_average.sql
 │
 └── solutions/
-    └── README.md                      <-- Comprehensive Solutions Summary & Expected Outputs ```
+    └── README.md                      <-- Comprehensive Solutions Summary & Expected Outputs
+
 
 ---
+
 
 ## 🔍 Interview SQL Challenges Summary
 
@@ -190,6 +192,4 @@ Phase 4 — SQL Solutions & Analytics
   └─ Write production-grade queries for all 10 interview challenges
 Phase 5 — Portfolio Finalization
   └─ Document architecture, ERD, solutions matrix, and push to GitHub
-
-
-
+```
