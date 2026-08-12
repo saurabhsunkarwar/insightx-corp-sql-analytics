@@ -80,6 +80,12 @@ ORDER BY UnitPrice DESC;
 GO
 
 ```
+#### Expected Output
+| ProductID | ProductName | CategoryName | UnitPrice |
+| :- | :--- | :--- | :- |
+| 5 | Mechanical Keyboard | Accessories | 149.99 |
+| 3 | Noise-Canceling Headphones | Audio | 349.99 |
+| 1 | Pro Laptop 15" | Electronics | 1499.99 |
 ---
 
 ## 03. Missing / Unmapped Products in Sales
@@ -109,6 +115,11 @@ WHERE oi.ProductID IS NULL
 GO
 
 ```
+#### Expected Output
+| OrderItemID | OrderID | RecordedProductID | Quantity | PricePerUnit | QualityIssueType |
+| :- | :- | :- | :- | :- | :--- |
+| 4 | 1004 | NULL | 1 | 150.00 | Missing Product ID (NULL) |
+| 8 | 1008 | 99 | 1 | 800.00 | Unmapped Product ID (Foreign Key Integrity Violation) |
 ---
 
 ## 04. Employees Sharing Salaries within Department
@@ -140,6 +151,13 @@ WHERE SameSalaryCount > 1
 ORDER BY DepartmentName, Salary DESC;
 GO
 ```
+#### Expected Output
+| DepartmentName | EmployeeName | Salary |
+| :--- | :--- | :--- |
+| Analytics | David Miller | 90000.00 |
+| Analytics | Rachel Green | 90000.00 |
+| Engineering | Alex Mercer | 75000.00 |
+| Engineering | Sarah Connor | 75000.00 |
 ---
 
 ## 05. Third Transaction Per User
@@ -174,6 +192,11 @@ ORDER BY UserID;
 GO
 
 ```
+#### Expected Output
+| UserID | TransactionID | TransactionTimestamp | Amount |
+| :- | :- | :- | :- |
+| 501 | 3 | 2025-01-05 18:45:00.0000000 | 100.00 |
+| 502 | 7 | 2025-02-07 11:10:00.0000000 | 200.00 |
 ---
 
 ## 06. Delayed Orders by Delivery Partner
@@ -201,6 +224,12 @@ ORDER BY DelayedDeliveries DESC, DelayPercentage DESC;
 GO
 
 ```
+#### Expected Output
+| PartnerID | PartnerName | TotalDeliveries | DelayedDeliveries | DelayPercentage |
+| :- | :--- | :- | :- | :- |
+| 3 | MetroExpress | 2 | 2 | 100.00 |
+| 1 | SwiftExpress | 3 | 2 | 66.67 |
+| 2 | LogiTrack | 2 | 0 | 0.00 |
 ---
 
 ## 07. Standardize Raw Customer Names
@@ -239,6 +268,14 @@ FROM ParsedNames;
 GO
 
 ```
+#### Expected Output
+| CustomerID | OriginalName | StandardizedName |
+| :- | :--- | :--- |
+| 1 | &nbsp;&nbsp;johnathan SMITH&nbsp;&nbsp; | Johnathan Smith |
+| 2 | mary JANE&nbsp;&nbsp; | Mary Jane |
+| 3 | robert T. DOWNEY | Robert T. downey |
+| 4 | Alice Walker | Alice Walker |
+| 5 | Bruce Wayne | Bruce Wayne |
 ---
 
 ## 08. Quarterly Customer Purchasing Trends
@@ -263,6 +300,13 @@ ORDER BY SalesYear ASC, DATEPART(QUARTER, OrderDate) ASC;
 GO
 
 ```
+#### Expected Output
+| SalesYear | SalesQuarter | UniqueCustomers | TotalOrders | QuarterlyRevenue | AvgOrderValue |
+| :- | :--- | :- | :- | :- | :- |
+| 2025 | Q1 | 3 | 3 | 1930.00 | 643.33 |
+| 2025 | Q2 | 2 | 2 | 1150.00 | 575.00 |
+| 2025 | Q3 | 2 | 2 | 480.00 | 240.00 |
+| 2025 | Q4 | 2 | 2 | 2300.00 | 1150.00 |
 ---
 
 ## 09. Weekday vs. Weekend Active Users
@@ -295,6 +339,10 @@ HAVING COUNT(CASE WHEN DayType = 'Weekday' THEN 1 END) > 0
    AND COUNT(CASE WHEN DayType = 'Weekend' THEN 1 END) > 0;
 GO
 ```
+#### Expected Output
+| UserID | WeekdayActivityCount | WeekendActivityCount |
+| :- | :- | :- |
+| 101 | 1 | 1 |
 ---
 
 ## 10. Products Performing Above Category Average Price
@@ -328,3 +376,9 @@ WHERE UnitPrice > CategoryAvgPrice
 ORDER BY CategoryName, PriceDifferenceAboveAvg DESC;
 GO
 ```
+#### Expected Output
+| ProductID | ProductName | CategoryName | UnitPrice | CategoryAvgPrice | PriceDifferenceAboveAvg |
+| :- | :--- | :--- | :- | :- | :- |
+| 5 | Mechanical Keyboard | Accessories | 149.99 | 114.99 | 35.00 |
+| 3 | Noise-Canceling Headphones | Audio | 349.99 | 239.99 | 110.00 |
+| 1 | Pro Laptop 15" | Electronics | 1499.99 | 1249.99 | 250.00 |
