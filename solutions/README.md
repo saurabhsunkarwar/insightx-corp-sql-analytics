@@ -152,12 +152,12 @@ ORDER BY DepartmentName, Salary DESC;
 GO
 ```
 #### Expected Output
-| DepartmentName | EmployeeName | Salary |
-| :--- | :--- | :--- |
-| Analytics | David Miller | 90000.00 |
-| Analytics | Rachel Green | 90000.00 |
-| Engineering | Alex Mercer | 75000.00 |
-| Engineering | Sarah Connor | 75000.00 |
+| EmployeeID | DepartmentName | EmployeeName | Salary |
+| :- | :--- | :--- | :- |
+| 6 | Analytics | David Miller | 90000.00 |
+| 7 | Analytics | Rachel Green | 90000.00 |
+| 1 | Engineering | Alex Mercer | 75000.00 |
+| 2 | Engineering | Sarah Connor | 75000.00 |
 ---
 
 ## 05. Third Transaction Per User
