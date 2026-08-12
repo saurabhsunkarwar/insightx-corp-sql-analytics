@@ -49,7 +49,10 @@ WHERE ActiveQuarters = 4
 ORDER BY TotalSpent DESC;
 GO
 ```
-
+#### Expected Output
+| CustomerID | FullName | ActiveQuarters |
+| :- | :--- | :- |
+| 1 | Johnathan Smith | 4 |
 ---
 
 ## 02. Most Expensive Products by Category
